@@ -1,3 +1,12 @@
+//this sketch uses a lawn tractor to power 3 components
+//1. at 12V it powers a 2 SPDT 10Amp Power Relay Module, DC 12V Version
+//2. at 12V it powers a Chuangruifa 15W 12VDC to 5VDC
+//3. at 12V it powers a linear actuator (BEMONOC DC 2 inch 12V linear actuator 50mm stroke 165lb heavey duty 10mm/s)
+// at 5V the Chuangruifa powers the Arduino, 2 5V switches (I used switches with red and green LED lights)
+// the Arduino reads the voltage at the switches to determine if they are on/off
+// the Arduino sends 5V to either of the relays (one relay extends the actuator, the other retracts)
+// the double relay module functions as a H-bridge to switch the polarity of the actuator and thus controls whether it extends or retracts
+// two pull-down 10K Ohm resistors are used to keep the voltage at zero in the wires measuring voltage at the switches when they are off.
 
 int red_toggle_button = 10;
 int green_toggle_button = 11;
@@ -25,49 +34,36 @@ int red_status = digitalRead(red_toggle_button);
 int green_status = digitalRead(green_toggle_button);
 
 
+if ((red_status == HIGH) && (green_status == LOW) && (counter < 1)) {
+  digitalWrite(relay_retract, HIGH);
+  delay(500); //lets door open for 500msec then stops
+  digitalWrite(relay_retract, LOW);
+  counter = 1;
+ }
 
-if ((red_status == HIGH) && (green_status == LOW)) {  //for red button on
-  if (counter < 1) {
-    digitalWrite(relay_retract, HIGH);
-    digitalWrite(relay_extend, LOW);
-    delay(500); //lets door open for 500msec then stops
-    digitalWrite(relay_retract, LOW);
-    digitalWrite(relay_extend, LOW);
-    counter = 1;
-  }
-}
+if ((red_status == LOW) && (green_status == HIGH) && (counter < 1)) {
+  digitalWrite(relay_retract, HIGH);
+  delay(800); //lets door open for 800msec then stops
+  digitalWrite(relay_retract, LOW);
+  counter = 1;
+ }
 
-
-
-if ((red_status == LOW) && (green_status == HIGH)){   //for green button on
-  if (counter < 1) {
-    digitalWrite(relay_retract, HIGH);
-    digitalWrite(relay_extend, LOW);
-    delay(300); //lets door open for 300msec then stops
-    digitalWrite(relay_retract, LOW);
-    digitalWrite(relay_extend, LOW);
-    counter = 1;
-  }
-}
+///////////////////////////////
 
 
-if ((red_status == LOW) && (green_status == LOW)) {  //for both buttons off, close the door
+if ((red_status == LOW) && (green_status == LOW) && (counter == 1)) {
   digitalWrite(relay_extend, HIGH);
-  digitalWrite(relay_retract, LOW);
-  delay(3000);
+  delay(4000); //closes door completely
   digitalWrite(relay_extend, LOW);
-  digitalWrite(relay_retract, LOW);
   counter = 0;
-  
-}
+ }
 
-if ((red_status == HIGH) && (green_status == HIGH)) {  //for accidentally activing both buttons simulteously, close the door
+ if ((red_status == HIGH) && (green_status == HIGH) && (counter == 1)) {
   digitalWrite(relay_extend, HIGH);
-  digitalWrite(relay_retract, LOW);
-  delay(3000);
+  delay(4000); //closes door completely for accidentally pressing red and green simultaneously
   digitalWrite(relay_extend, LOW);
-  digitalWrite(relay_retract, LOW);
   counter = 0;
+ }
 
-}
+
 }

@@ -53,6 +53,7 @@ if ((red_status == LOW) && (green_status == HIGH)){   //for green button on
 if ((red_status == LOW) && (green_status == LOW)) {  //for both buttons off, close the door
   digitalWrite (relay_extend, HIGH);
   delay(3000);
+  digitalWrite (relay_extend, LOW);
   counter = 0;
   
 }
@@ -60,6 +61,7 @@ if ((red_status == LOW) && (green_status == LOW)) {  //for both buttons off, clo
 if ((red_status == HIGH) && (green_status == HIGH)) {  //for accidentally activing both buttons simulteously, close the door
   digitalWrite (relay_extend, HIGH);
   delay(3000);
+  digitalWrite (relay_extend, LOW);
   counter = 0;
 
 }

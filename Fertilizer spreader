@@ -1,0 +1,66 @@
+
+int red_toggle_button = 10;
+int green_toggle_button = 11;
+int relay_extend = 12; //activing this relay extends the linear actuator and closes the door stopping fertilizer
+int relay_retract = 13; //activing this relay retracts the linear actuator and opens the door starting the flow of fertilzer
+int counter = 0;
+
+
+void setup() {
+  // put your setup code here, to run once:
+
+pinMode(red_toggle_button, INPUT); //red_toggle_button which is on pin 10, will read digital input. Is the button on/off i.e. is it getting 5V or not
+pinMode (green_toggle_button, INPUT);
+pinMode (relay_extend, OUTPUT);
+pinMode (relay_retract, OUTPUT);
+
+Serial.begin(9600);
+
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+int red_status = digitalRead(red_toggle_button);
+int green_status = digitalRead(green_toggle_button);
+
+
+
+if ((red_status == HIGH) && (green_status == LOW)) {  //for red button on
+  if (counter < 1) {
+    digitalWrite(relay_retract, HIGH);
+    digitalWrite(relay_extend, LOW);
+    delay(500); //lets door open for 500msec then stops
+    digitalWrite(relay_retract, LOW);
+    digitalWrite(relay_extend, LOW);
+    counter = 1;
+  }
+}
+
+
+
+if ((red_status == LOW) && (green_status == HIGH)){   //for green button on
+  if (counter < 1) {
+    digitalWrite(relay_retract, HIGH);
+    digitalWrite(relay_extend, LOW);
+    delay(300); //lets door open for 300msec then stops
+    digitalWrite(relay_retract, LOW);
+    digitalWrite(relay_extend, LOW);
+  }
+}
+
+
+if ((red_status == LOW) && (green_status == LOW)) {  //for both buttons off, close the door
+  digitalWrite (relay_extend, HIGH);
+  delay(3000);
+  counter = 0;
+  
+}
+
+if ((red_status == HIGH) && (green_status == HIGH)) {  //for accidentally activing both buttons simulteously, close the door
+  digitalWrite (relay_extend, HIGH);
+  delay(3000);
+  counter = 0;
+
+}
+}
